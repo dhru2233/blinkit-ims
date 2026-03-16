@@ -1,9 +1,20 @@
+import React from 'react'
+import Navbar from './components/Navbar'
+
 function App() {
   return (
-    <div style={{ backgroundColor: '#F7EC09', minHeight: '100vh', padding: '20px' }}>
-      <h1 style={{ color: '#1D3D2F' }}>Blinkit Inventory Manager</h1>
-      <p>Ready to build!</p>
+    <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
+      <Navbar />
+      
+      {/* Main Content Area */}
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h2 style={{ color: '#333' }}>Inventory Dashboard</h2>
+        <p style={{ color: '#666' }}>Welcome to your Blinkit-style Management System.</p>
+        
+        {/* We will add the Inventory Table here next! */}
+      </div>
     </div>
   )
 }
+
 export default App
