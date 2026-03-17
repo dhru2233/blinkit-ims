@@ -4,6 +4,26 @@ import ProductCard from './components/ProductCard';
 import OrderTracker from './components/OrderTracker';
 
 function App() {
+  const downloadReport = () => {
+  // 1. Create the Header for the CSV
+  const header = "ID,Product Name,Category,Price,Stock\n";
+  
+  // 2. Map through all 100 products and format them
+  const rows = products.map(p => 
+    `${p.id},${p.name},${p.category},${p.price},${p.stock}`
+  ).join("\n");
+
+  // 3. Create the file and trigger download
+  const blob = new Blob([header + rows], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', 'Blinkit_Inventory_Report.csv');
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
   const [searchTerm, setSearchTerm] = useState("");
   
   // 1. Generate 100 items (Same as before)
@@ -59,6 +79,26 @@ const styles = {
   statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' },
   statCard: { background: '#1e293b', padding: '15px', borderRadius: '12px', textAlign: 'center', border: '1px solid #334155' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginTop: '20px' }
+};
+const downloadReport = () => {
+  // 1. Create the Header for the CSV
+  const header = "ID,Product Name,Category,Price,Stock\n";
+  
+  // 2. Map through all 100 products and format them
+  const rows = products.map(p => 
+    `${p.id},${p.name},${p.category},${p.price},${p.stock}`
+  ).join("\n");
+
+  // 3. Create the file and trigger download
+  const blob = new Blob([header + rows], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', 'Blinkit_Inventory_Report.csv');
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };
 
 export default App;
