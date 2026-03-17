@@ -1,71 +1,77 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
-import OrderTracker from './components/OrderTracker';
-import Login from './components/Login'; // NEW IMPORT
+import LiveTracker from './components/LiveTracker';
+import Login from './components/Login';
 
 function App() {
-  const [userRole, setUserRole] = useState(null); // 'admin', 'customer', or null
-  const [searchTerm, setSearchTerm] = useState("");
-  const [revenue, setRevenue] = useState(0);
+  const [role, setRole] = useState(null); // 'admin' or 'customer'
+  const [orderStep, setOrderStep] = useState(0);
+  const [products, setProducts] = useState(JSON.parse(localStorage.getItem('blinkit_inventory')) || []);
 
-  // LOAD DATA FROM LOCAL STORAGE OR GENERATE NEW
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem("blinkit_inventory");
-    if (saved) return JSON.parse(saved);
-    
-    const items = [];
-    const categories = ["Dairy", "Snacks", "Bakery", "Beverages", "Household"];
-    for (let i = 1; i <= 100; i++) {
-      items.push({
-        id: i,
-        name: `${categories[i % categories.length]} Item ${i}`,
-        price: Math.floor(Math.random() * 500) + 20,
-        stock: Math.floor(Math.random() * 50),
-        category: categories[i % categories.length]
-      });
-    }
-    return items;
-  });
+  // Update Stock Logic
+  const handleStock = (id, change) => {
+    const updated = products.map(p => p.id === id ? {...p, stock: Math.max(0, p.stock + change)} : p);
+    setProducts(updated);
+    localStorage.setItem('blinkit_inventory', JSON.stringify(updated));
+  };
 
-  // SAVE DATA WHENEVER PRODUCTS CHANGE
-  useEffect(() => {
-    localStorage.setItem("blinkit_inventory", JSON.stringify(products));
-  }, [products]);
-
-  const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (!userRole) return <Login onLogin={(isAdmin) => setUserRole(isAdmin ? 'admin' : 'customer')} />;
+  if (!role) return <Login onLogin={(isAdmin) => setRole(isAdmin ? 'admin' : 'customer')} />;
 
   return (
     <div style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: '#fff' }}>
-      <Navbar onSearch={setSearchTerm} />
+      <Navbar onSearch={() => {}} />
+      
       <div style={{ padding: '20px 40px' }}>
-        <div style={styles.statsGrid}>
-          <div style={styles.statCard}><h3>{userRole.toUpperCase()}</h3><p>CURRENT ROLE</p></div>
-          <div style={styles.statCard}><h3 style={{color: '#4ade80'}}>₹{revenue}</h3><p>SESSION REVENUE</p></div>
-          <div style={styles.statCard}><h3 style={{color: '#f87171'}}>{products.filter(p => p.stock < 5).length}</h3><p>LOW STOCK</p></div>
-        </div>
-        
-        <OrderTracker status="Packing" />
-
-        <div style={styles.grid}>
-          {filteredProducts.map(product => (
-            <ProductCard key={product.id} {...product} isAdmin={userRole === 'admin'} />
-          ))}
-        </div>
+        {/* --- ADMIN PANEL VIEW --- */}
+        {role === 'admin' ? (
+          <div id="admin-panel">
+            <h1 style={{color: '#F8CB46'}}>Admin Portal - Dark Store Delhi-01</h1>
+            <div style={styles.statsRow}>
+              <div style={styles.statBox}><h3>{products.filter(p => p.stock < 5).length}</h3><p>Alerts</p></div>
+              <button onClick={() => setOrderStep((prev) => (prev + 1) % 4)} style={styles.trackBtn}>
+                Update Order Status (Live)
+              </button>
+            </div>
+            <div style={styles.grid}>
+              {products.map(p => (
+                <div key={p.id} style={styles.adminCard}>
+                  <h4>{p.name}</h4>
+                  <p>Stock: {p.stock}</p>
+                  <button onClick={() => handleStock(p.id, 5)} style={styles.addBtn}>+ Restock 5</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* --- CUSTOMER PANEL VIEW --- */
+          <div id="customer-panel">
+            <div style={styles.promoBanner}>
+              <h2>Groceries in 10 minutes</h2>
+              <p>Fresh products from our dark store to your door</p>
+            </div>
+            <h3>Live Track your Order</h3>
+            <LiveTracker step={orderStep} />
+            <div style={styles.grid}>
+              {products.filter(p => p.stock > 0).map(p => (
+                <ProductCard key={p.id} {...p} isAdmin={false} onAction={() => handleStock(p.id, -1)} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 const styles = {
-    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' },
-    statCard: { background: '#1e293b', padding: '15px', borderRadius: '12px', textAlign: 'center', border: '1px solid #334155' },
-    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginTop: '40px' }
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' },
+  statsRow: { display: 'flex', gap: '20px', margin: '20px 0' },
+  statBox: { background: '#1e293b', padding: '20px', borderRadius: '12px', border: '1px solid #ff4d4f' },
+  adminCard: { background: '#1e293b', padding: '15px', borderRadius: '12px', border: '1px solid #334155' },
+  addBtn: { width: '100%', background: '#F8CB46', border: 'none', padding: '8px', borderRadius: '5px', marginTop: '10px', fontWeight: 'bold', cursor: 'pointer' },
+  trackBtn: { background: '#4ade80', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' },
+  promoBanner: { background: 'linear-gradient(90deg, #1e293b, #0f172a)', padding: '40px', borderRadius: '20px', marginBottom: '30px', border: '1px solid #334155' }
 };
 
 export default App;
