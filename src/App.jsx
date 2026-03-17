@@ -1,59 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
+import OrderTracker from './components/OrderTracker';
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(false); // Switch between panels
-  const [products, setProducts] = useState([
-    { id: 1, name: "Amul Gold Milk", price: 66, stock: 12, category: "Dairy" },
-    { id: 2, name: "Harvest Gold Bread", price: 50, stock: 5, category: "Bakery" },
-    { id: 3, name: "Lay's Classic Chips", price: 20, stock: 45, category: "Snacks" },
-  ]);
+  const [isAdmin, setIsAdmin] = useState(true);
+  
+  // GENERATING 100 ITEMS AUTOMATICALLY
+  const initialProducts = useMemo(() => {
+    const items = [];
+    const categories = ["Dairy", "Snacks", "Bakery", "Beverages", "Household"];
+    for (let i = 1; i <= 100; i++) {
+      items.push({
+        id: i,
+        name: `Product ${i}`,
+        price: Math.floor(Math.random() * 500) + 20,
+        stock: Math.floor(Math.random() * 50),
+        category: categories[i % categories.length]
+      });
+    }
+    return items;
+  }, []);
 
-  // Real-time stock update function
-  const updateStock = (id, amount) => {
-    setProducts(products.map(p => 
-      p.id === id ? { ...p, stock: p.stock + amount } : p
-    ));
-  };
+  const [products, setProducts] = useState(initialProducts);
 
   return (
-    <div style={{ backgroundColor: '#f4f6f8', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: '#fff', paddingBottom: '50px' }}>
       <Navbar />
       
-      {/* Control Switcher */}
-      <div style={styles.tabContainer}>
-        <button 
-          onClick={() => setIsAdmin(false)} 
-          style={{...styles.tab, borderBottom: !isAdmin ? '3px solid #0C831F' : 'none'}}>
-          Customer View
-        </button>
-        <button 
-          onClick={() => setIsAdmin(true)} 
-          style={{...styles.tab, borderBottom: isAdmin ? '3px solid #0C831F' : 'none'}}>
-          Admin Dashboard
-        </button>
-      </div>
-
       <div style={{ padding: '20px 40px' }}>
-        <div style={styles.headerSection}>
-          <h2>{isAdmin ? "Admin Inventory Manager" : "Order Online"}</h2>
-          <p>{isAdmin ? "Manage your warehouse stock levels" : "Fastest delivery to your doorstep"}</p>
+        {/* Real-Time Dashboard Stats */}
+        <div style={styles.statsGrid}>
+          <div style={styles.statCard}><h3 style={{color: '#F8CB46'}}>100</h3><p>TOTAL SKUs</p></div>
+          <div style={styles.statCard}><h3 style={{color: '#4ade80'}}>₹2,714</h3><p>REVENUE</p></div>
+          <div style={styles.statCard}><h3 style={{color: '#f87171'}}>
+            {products.filter(p => p.stock < 5).length}
+          </h3><p>ALERTS</p></div>
         </div>
 
+        {/* Live Tracking Experience */}
+        <h3 style={{marginTop: '30px'}}>Active Order: ORD-207</h3>
+        <OrderTracker status="Packing" />
+
+        {/* Product Grid */}
+        <h3 style={{marginTop: '40px'}}>Warehouse Inventory</h3>
         <div style={styles.grid}>
           {products.map(product => (
-            <div key={product.id} style={styles.cardWrapper}>
-              <ProductCard {...product} />
-              
-              {/* Admin Panel Controls */}
-              {isAdmin && (
-                <div style={styles.adminControls}>
-                  <button onClick={() => updateStock(product.id, 1)} style={styles.plusBtn}>+ Add Stock</button>
-                  <button onClick={() => updateStock(product.id, -1)} style={styles.minusBtn}>- Remove</button>
-                </div>
-              )}
-            </div>
+            <ProductCard key={product.id} {...product} />
           ))}
         </div>
       </div>
@@ -62,13 +55,14 @@ function App() {
 }
 
 const styles = {
-  tabContainer: { display: 'flex', justifyContent: 'center', background: '#fff', gap: '50px' },
-  tab: { padding: '15px 20px', cursor: 'pointer', border: 'none', background: 'none', fontWeight: 'bold' },
-  headerSection: { marginBottom: '30px' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '25px' },
-  adminControls: { marginTop: '10px', display: 'flex', gap: '5px' },
-  plusBtn: { flex: 1, background: '#0C831F', color: '#fff', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' },
-  minusBtn: { flex: 1, background: '#e53e3e', color: '#fff', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' },
+  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' },
+  statCard: { background: '#1e293b', padding: '15px', borderRadius: '12px', textAlign: 'center', border: '1px solid #334155' },
+  grid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+    gap: '20px', 
+    marginTop: '20px' 
+  }
 };
 
 export default App;
