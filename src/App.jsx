@@ -1,33 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import OrderTracker from './components/OrderTracker';
+import Login from './components/Login'; // NEW IMPORT
 
 function App() {
-  const downloadReport = () => {
-  // 1. Create the Header for the CSV
-  const header = "ID,Product Name,Category,Price,Stock\n";
-  
-  // 2. Map through all 100 products and format them
-  const rows = products.map(p => 
-    `${p.id},${p.name},${p.category},${p.price},${p.stock}`
-  ).join("\n");
-
-  // 3. Create the file and trigger download
-  const blob = new Blob([header + rows], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.setAttribute('hidden', '');
-  a.setAttribute('href', url);
-  a.setAttribute('download', 'Blinkit_Inventory_Report.csv');
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-};
+  const [userRole, setUserRole] = useState(null); // 'admin', 'customer', or null
   const [searchTerm, setSearchTerm] = useState("");
-  
-  // 1. Generate 100 items (Same as before)
-  const initialProducts = useMemo(() => {
+  const [revenue, setRevenue] = useState(0);
+
+  // LOAD DATA FROM LOCAL STORAGE OR GENERATE NEW
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem("blinkit_inventory");
+    if (saved) return JSON.parse(saved);
+    
     const items = [];
     const categories = ["Dairy", "Snacks", "Bakery", "Beverages", "Household"];
     for (let i = 1; i <= 100; i++) {
@@ -40,34 +26,35 @@ function App() {
       });
     }
     return items;
-  }, []);
+  });
 
-  const [products] = useState(initialProducts);
+  // SAVE DATA WHENEVER PRODUCTS CHANGE
+  useEffect(() => {
+    localStorage.setItem("blinkit_inventory", JSON.stringify(products));
+  }, [products]);
 
-  // 2. FILTER LOGIC
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (!userRole) return <Login onLogin={(isAdmin) => setUserRole(isAdmin ? 'admin' : 'customer')} />;
 
   return (
     <div style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: '#fff' }}>
       <Navbar onSearch={setSearchTerm} />
-      
       <div style={{ padding: '20px 40px' }}>
-        {/* Stats Cards */}
         <div style={styles.statsGrid}>
-          <div style={styles.statCard}><h3>{filteredProducts.length}</h3><p>RESULTS FOUND</p></div>
-          <div style={styles.statCard}><h3 style={{color: '#4ade80'}}>7</h3><p>DELIVERED</p></div>
-          <div style={styles.statCard}><h3 style={{color: '#f87171'}}>{products.filter(p => p.stock < 5).length}</h3><p>ALERTS</p></div>
+          <div style={styles.statCard}><h3>{userRole.toUpperCase()}</h3><p>CURRENT ROLE</p></div>
+          <div style={styles.statCard}><h3 style={{color: '#4ade80'}}>₹{revenue}</h3><p>SESSION REVENUE</p></div>
+          <div style={styles.statCard}><h3 style={{color: '#f87171'}}>{products.filter(p => p.stock < 5).length}</h3><p>LOW STOCK</p></div>
         </div>
-
+        
         <OrderTracker status="Packing" />
 
-        <h3 style={{marginTop: '40px'}}>Inventory Catalog</h3>
         <div style={styles.grid}>
           {filteredProducts.map(product => (
-            <ProductCard key={product.id} {...product} />
+            <ProductCard key={product.id} {...product} isAdmin={userRole === 'admin'} />
           ))}
         </div>
       </div>
@@ -76,29 +63,9 @@ function App() {
 }
 
 const styles = {
-  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' },
-  statCard: { background: '#1e293b', padding: '15px', borderRadius: '12px', textAlign: 'center', border: '1px solid #334155' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginTop: '20px' }
-};
-const downloadReport = () => {
-  // 1. Create the Header for the CSV
-  const header = "ID,Product Name,Category,Price,Stock\n";
-  
-  // 2. Map through all 100 products and format them
-  const rows = products.map(p => 
-    `${p.id},${p.name},${p.category},${p.price},${p.stock}`
-  ).join("\n");
-
-  // 3. Create the file and trigger download
-  const blob = new Blob([header + rows], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.setAttribute('hidden', '');
-  a.setAttribute('href', url);
-  a.setAttribute('download', 'Blinkit_Inventory_Report.csv');
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' },
+    statCard: { background: '#1e293b', padding: '15px', borderRadius: '12px', textAlign: 'center', border: '1px solid #334155' },
+    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginTop: '40px' }
 };
 
 export default App;
