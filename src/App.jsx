@@ -73,5 +73,14 @@ const styles = {
   trackBtn: { background: '#4ade80', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' },
   promoBanner: { background: 'linear-gradient(90deg, #1e293b, #0f172a)', padding: '40px', borderRadius: '20px', marginBottom: '30px', border: '1px solid #334155' }
 };
+// Add this inside your App component
+useEffect(() => {
+  if (orderStep > 0) {
+    const statusLabels = ["Order Received", "Packing your items", "Out for Delivery", "Arrived at your location"];
+    setToast(`Order Update: ${statusLabels[orderStep]}`);
+  }
+}, [orderStep]);
 
+// Inside your return() (near the bottom)
+{toast && <Notification message={toast} onClose={() => setToast("")} />}
 export default App;
