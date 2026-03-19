@@ -1,0 +1,26 @@
+/* BLINKIT IMS — Global Styles */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+:root {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: #0a0a0a;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}
+body { min-height: 100vh; overflow-x: hidden; background: #0a0a0a; }
+#root { min-height: 100vh; }
+html  { scroll-behavior: smooth; }
+button        { font-family: inherit; cursor: pointer; }
+input, select { font-family: inherit; font-size: inherit; }
+a             { text-decoration: none; color: inherit; }
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #020817; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #FFD700; }
+::selection   { background: #FFD70030; color: #FFD700; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.3s ease forwards; }
