@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/blinkit-ims/', 
+  base: '/',   // change this from '/blinkit-ims/' to '/'
 })
