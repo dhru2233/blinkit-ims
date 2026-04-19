@@ -1,105 +1,77 @@
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #f5f5f5;
-  color: #1c1c1c;
-  -webkit-font-smoothing: antialiased;
-}
-body { min-height: 100vh; overflow-x: hidden; }
-#root { min-height: 100vh; }
-html { scroll-behavior: smooth; }
-button { font-family: inherit; cursor: pointer; }
-input, select, textarea { font-family: inherit; font-size: inherit; }
-a { text-decoration: none; color: inherit; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;overflow-x:hidden;background:#F7F7F7}
+#root{min-height:100vh}
+html{scroll-behavior:smooth}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit}
+a{text-decoration:none;color:inherit}
 
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #f5f5f5; }
-::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #F8C200; }
-::selection { background: #F8C20030; color: #1c1c1c; }
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#f0f0f0}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#F8C200}
+::selection{background:#F8C20030}
 
-/* Leaflet map fix */
-.leaflet-container { border-radius: 12px; }
-.leaflet-control-attribution { display: none !important; }
+/* Leaflet */
+.leaflet-container{border-radius:16px;z-index:1}
+.leaflet-control-attribution{display:none!important}
+.leaflet-control-zoom{border:none!important;box-shadow:0 2px 12px rgba(0,0,0,0.15)!important}
+.leaflet-control-zoom a{border-radius:8px!important;color:#1C1C1C!important;font-weight:700!important}
+
+/* Marker styles */
+.rider-dot{width:40px;height:40px;background:#F8C200;border:3px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px rgba(248,194,0,0.5);animation:riderBounce 1s ease infinite}
+.store-dot{width:38px;height:38px;background:#0D0D0D;border:3px solid #F8C200;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.home-dot{width:38px;height:38px;background:#0EA472;border:3px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(14,164,114,0.4)}
+.local-dot{width:38px;height:38px;background:#FF6B35;border:3px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(255,107,53,0.4)}
 
 /* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-16px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
-}
-@keyframes ripple {
-  0%   { transform: scale(0); opacity: 0.6; }
-  100% { transform: scale(2.5); opacity: 0; }
-}
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes riderBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+@keyframes countDown{from{stroke-dashoffset:0}to{stroke-dashoffset:283}}
+@keyframes rippleOut{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-.fade-in   { animation: fadeIn  0.35s ease forwards; }
-.slide-in  { animation: slideIn 0.3s  ease forwards; }
-.spin      { animation: spin    1s linear infinite; }
-.bounce    { animation: bounce  1s ease infinite; }
-.pulse-anim{ animation: pulse   1.5s ease infinite; }
+.fade-up    {animation:fadeUp    .35s cubic-bezier(.22,.68,0,1.2) forwards}
+.fade-in    {animation:fadeIn    .3s  ease forwards}
+.slide-r    {animation:slideRight .3s ease forwards}
+.scale-in   {animation:scaleIn   .28s cubic-bezier(.22,.68,0,1.2) forwards}
+.spin       {animation:spin      1s   linear infinite;display:inline-block}
+.pulse-anim {animation:pulse     1.6s ease infinite}
 
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 400px 100%;
-  animation: shimmer 1.4s ease infinite;
-  border-radius: 8px;
-}
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:600px 100%;animation:shimmer 1.4s ease infinite;border-radius:8px}
 
-/* Map rider marker */
-.rider-marker {
-  background: #F8C200;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-  animation: bounce 1s ease infinite;
-}
-.store-marker {
-  background: #1c1c1c;
-  border: 3px solid #F8C200;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-}
-.home-marker {
-  background: #0EA472;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  box-shadow: 0 2px 12px rgba(14,164,114,0.4);
-}
+/* Glassmorphism card */
+.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.glass-dark{background:rgba(13,13,13,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+
+/* Gradient text */
+.grad-text{background:linear-gradient(135deg,#F8C200,#FF6B35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Category pill active */
+.cat-active{background:linear-gradient(135deg,#F8C200,#FF8C00)!important;color:#0D0D0D!important;border-color:transparent!important;box-shadow:0 4px 14px rgba(248,194,0,0.35)!important}
+
+/* Product card hover */
+.prod-card{transition:transform .22s ease,box-shadow .22s ease}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.12)!important}
+
+/* Ripple btn */
+.ripple-btn{position:relative;overflow:hidden}
+.ripple-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.2);transform:scale(0);border-radius:50%;animation:rippleOut .5s ease forwards;pointer-events:none}
+
+/* Status progress */
+.status-track{display:flex;align-items:center;gap:0;width:100%}
+.status-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:all .4s ease;border:2.5px solid transparent;position:relative;z-index:1}
+.status-dot.done{box-shadow:0 0 0 4px rgba(14,164,114,.15)}
+.status-dot.curr{box-shadow:0 0 0 4px rgba(248,194,0,.25);animation:pulse 1.5s ease infinite}
+.status-line{flex:1;height:3px;border-radius:2px;transition:background .5s ease}
+
+/* Countdown ring */
+.countdown-ring{filter:drop-shadow(0 0 8px rgba(248,194,0,.4))}
